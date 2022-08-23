@@ -1,4 +1,5 @@
 import axios from "axios";
+import { call, delay, put, takeEvery } from "redux-saga/effects";
 
 // 액션 타입 정의
 //깃허브 api 호출 시작
@@ -85,7 +86,7 @@ export default function reducer(state = initialState, action) {
 
 // redux-thunk
 export function getUsersThunk() {
-  return async (dispatch) => {
+  return async (dispatch, getState, { history }) => {
     try {
       dispatch(getUsersStart());
       const res = await axios.get("https://api.github.com/users");
@@ -105,4 +106,29 @@ export function getUsersPromise() {
       return res.data;
     },
   };
+}
+
+// redux-saga
+const GET_USERS_SAGA_START = "GET_USERS_SAGA_START";
+
+function* getUsersSaga(action) {
+  try {
+    yield put(getUsersStart());
+    // yield delay(2000);
+    const res = yield call(axios.get, "https://api.github.com/users");
+    yield put(getUsersSuccess(res.data));
+    yield put();
+  } catch (error) {
+    yield put(getUsersFail(error));
+  }
+}
+
+export function getUsresSagaStart() {
+  return {
+    type: GET_USERS_SAGA_START,
+  };
+}
+
+export function* usersSaga() {
+  yield takeEvery(GET_USERS_SAGA_START, getUsersSaga);
 }

@@ -1,27 +1,24 @@
-// 액션 타입 정의
-const SHOW_ALL = "redux-start/filter/SHOW_ALL";
-const SHOW_COMPLETE = "redux-start/filter/SHOW_COMPLETE";
+import { createActions, handleActions } from "redux-actions";
 
-// 액션 생성 함수
-export function showALL() {
-  return { type: SHOW_ALL };
-}
-export function showComplete() {
-  return { type: SHOW_COMPLETE };
-}
+export const { showAll, showComplete } = createActions(
+  "SHOW_ALL",
+  "SHOW_COMPLETE",
+  {
+    prefix: "redux-start/filter",
+  }
+);
 
 //초기값
 const initialSate = "ALL";
 
+const reducer = handleActions(
+  {
+    SHOW_ALL: (state, action) => "ALL",
+    SHOW_COMPLETE: () => "COMPLETE",
+  },
+  initialSate,
+  { prefix: "redux-start/filter" }
+);
+
 // 리듀서
-export default function reducer(previousState = initialSate, action) {
-  if (action.type === SHOW_ALL) {
-    return "ALL";
-  }
-
-  if (action.type === SHOW_COMPLETE) {
-    return "COMPLETE";
-  }
-
-  return previousState;
-}
+export default reducer;
